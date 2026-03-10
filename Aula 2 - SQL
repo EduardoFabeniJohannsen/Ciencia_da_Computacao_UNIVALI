@@ -1,0 +1,24 @@
+-- Criar tabela de clientes
+CREATE TABLE clientes (
+    id INT PRIMARY KEY,
+    nome VARCHAR(100)
+);
+
+-- Criar tabela de pedidos
+CREATE TABLE pedidos (
+    id INT PRIMARY KEY,
+    nome_cliente VARCHAR(100),
+    valor DECIMAL(10,2)
+);
+
+-- Inserindo alguns clientes
+INSERT INTO clientes (id, nome) VALUES
+(1, 'João'),
+(2, 'Maria'),
+(3, 'Carlos');
+
+-- Inserindo alguns pedidos
+INSERT INTO pedidos (id, nome_cliente, valor) VALUES
+(1, 'João', 150.00),
+(2, 'Maria', 230.50),
+(3, 'Carlos', 99.90);
