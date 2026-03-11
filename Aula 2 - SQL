@@ -1,24 +1,68 @@
--- Criar tabela de clientes
-CREATE TABLE clientes (
-    id INT PRIMARY KEY,
-    nome VARCHAR(100)
-);
+// Código para aprender conceitos de TRIGGER e funções no SQL
 
--- Criar tabela de pedidos
-CREATE TABLE pedidos (
-    id INT PRIMARY KEY,
-    nome_cliente VARCHAR(100),
-    valor DECIMAL(10,2)
-);
+CREATE TABLE Funcionario 
+	(ID serial primary key, 
+	 nome text, 
+	 salario numeric (10,2)
+	);
 
--- Inserindo alguns clientes
-INSERT INTO clientes (id, nome) VALUES
-(1, 'João'),
-(2, 'Maria'),
-(3, 'Carlos');
+CREATE TABLE Funcionario_log 
+	(ID serial primary key,
+	id_funcionario int, 
+	nome_antigo text, 
+	nome_novo   text, 
+	salario_antigo numeric (10,2), 
+	salario_novo   numeric (10,2), 
+	data_alteracao TIMESTAMPTZ NOT NULL DEFAULT now() -- timestamptz inclui fuso horário
+	);
+	
+	
+SELECT * FROM Funcionario;
+SELECT * FROM Funcionario_log;
 
--- Inserindo alguns pedidos
-INSERT INTO pedidos (id, nome_cliente, valor) VALUES
-(1, 'João', 150.00),
-(2, 'Maria', 230.50),
-(3, 'Carlos', 99.90);
+INSERT INTO Funcionario (nome,salario) VALUES
+('Peleleca',50000),
+('Kaun David Leal',1614)
+;  
+
+UPDATE Funcionario 
+	set salario = 1650 
+	WHERE id = 2;
+	
+UPDATE Funcionario 
+	set nome = 'Peleleca TI' 
+	WHERE id = 1;
+
+
+
+CREATE OR REPLACE FUNCTION Registrar_Log_Alteração_de_Salario()
+RETURNS TRIGGER AS $$
+BEGIN
+	INSERT INTO Funcionario_log (id_funcionario, salario_antigo,salario_novo, data_alteracao) 
+  	VALUES (new.id,old.salario,new.salario, now()); 
+RETURN NEW; 
+END; $$ LANGUAGE plpgsql;   
+ 
+CREATE TRIGGER Rastrear_Alteração_de_Nome
+AFTER UPDATE 
+ON Funcionario
+FOR EACH ROW
+WHEN (old.nome <> new.nome)
+EXECUTE FUNCTION Registrar_Log_Alteração_de_Nome();
+
+
+
+CREATE OR REPLACE FUNCTION Registrar_Log_Alteração_de_Nome()
+RETURNS TRIGGER AS $$
+BEGIN
+	INSERT INTO Funcionario_log (id_funcionario, nome_antigo,nome_novo, data_alteracao) 
+  	VALUES (new.id,old.nome,new.nome, now()); 
+RETURN NEW; 
+END; $$ LANGUAGE plpgsql;   
+ 
+CREATE TRIGGER Rastrear_Alteração_de_Nome
+AFTER UPDATE 
+ON Funcionario
+FOR EACH ROW
+WHEN (old.salario <> new.salario)
+EXECUTE FUNCTION Registrar_Log_Alteração_de_Salario();
