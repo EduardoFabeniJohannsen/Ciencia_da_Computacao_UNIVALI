@@ -69,3 +69,24 @@
 	WHEN (old.nome IS DISTINCT FROM new.nome)
 	EXECUTE FUNCTION Registrar_Log_Alteracao_de_Nome();
 	/*FIM Log alteração de Nome */
+
+	/*INICIO do Desafio */
+	CREATE OR REPLACE FUNCTION Validar_aumento_salario()
+	RETURNS TRIGGER AS $$
+	BEGIN
+		IF new.salario >= old.salario *2 THEN
+			RAISE EXCEPTION 'Faz o L, não pode dobrar o salário do funcionário';
+		END IF;
+
+		RETURN NEW; 	
+	END;
+	$$ LANGUAGE plpgsql;
+
+
+	CREATE TRIGGER Nao_pode_dobrar_o_salario_do_funcionario
+	BEFORE UPDATE 
+	ON Funcionario
+	FOR EACH ROW
+	WHEN (old.salario IS DISTINCT FROM new.salario)
+	EXECUTE FUNCTION Validar_aumento_salario();
+	/*FIM do Desafio */
