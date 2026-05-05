@@ -54,5 +54,32 @@ WHERE rental_date = '2005-05-24';
 
 
 
- 3. Busque uma tabela que tenha campo data, crie um índice, indicar qual tabela e mostrar as analises antes e depois da criação do índice.
- R:
+/*
+3. Busque uma tabela que tenha campo data, crie um índice, indicar qual tabela e mostrar as análises antes e depois da criação do índice.
+
+R:
+Tabela utilizada: rental
+Campo: return_date
+
+Antes:
+Resultado esperado → Seq Scan (varredura completa)
+
+Depois:
+Resultado esperado → Index Scan (uso do índice)
+*/
+
+-- Antes
+EXPLAIN ANALYZE
+SELECT *
+FROM rental
+WHERE return_date = '2005-05-24';
+
+-- Criação do índice
+CREATE INDEX idx_rental_return_date
+ON rental (return_date);
+
+-- Depois
+EXPLAIN ANALYZE
+SELECT *
+FROM rental
+WHERE return_date = '2005-05-24';
