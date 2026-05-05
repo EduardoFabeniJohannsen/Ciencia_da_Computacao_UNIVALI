@@ -1,17 +1,18 @@
-Uma vez restaurado, deve-se responder a algumas perguntas:
+/*
+1. Quais índices, que não são chave primaria existem no database ?
 
-/*1. Quais índices, que não são chave primaria existem no database ?
-R:Consulto todos os indexs e removo todos que são "pk" e "fk" Me restando:
+R: Consulto todos os índices e removo os que são "pk" e "fk".
+Resultado encontrado:
 
-"actor"	"idx_actor_last_name"
-"customer"	"idx_last_name"
-"film"	"film_fulltext_idx"
-"film"	"idx_title"
-"inventory"	"idx_store_id_film_id"
-"rental"	"idx_unq_rental_rental_date_inventory_id_customer_id"
-"store"	"idx_unq_manager_staff_id"
-
+actor      → idx_actor_last_name
+customer   → idx_last_name
+film       → film_fulltext_idx
+film       → idx_title
+inventory  → idx_store_id_film_id
+rental     → idx_unq_rental_rental_date_inventory_id_customer_id
+store      → idx_unq_manager_staff_id
 */
+
 SELECT tablename, indexname
 FROM pg_indexes
 WHERE schemaname = 'public'
@@ -20,9 +21,36 @@ AND indexname NOT LIKE '%pk%'
 ORDER BY tablename, indexname;
 
 
-2. Caso existe algum índice de data em alguma tabela , usar uma consulta select e ver  se o índice é utilizado.
-Se náo for utilizado, indicar o possível motivo.
-R:
+
+/*
+2. Caso exista algum índice de data em alguma tabela, usar uma consulta SELECT e verificar se o índice é utilizado.
+Se não for utilizado, indicar o possível motivo.
+
+R: Foi feita a busca por índices em campos de data/tempo.
+Foi encontrado:
+
+rental → idx_unq_rental_rental_date_inventory_id_customer_id
+
+Teste realizado:
+Se aparecer "Index Scan", o índice está sendo utilizado.
+Se aparecer "Seq Scan", não está sendo utilizado.
+
+Possíveis motivos para não utilização:
+- Tabela pequena
+- Baixa seletividade
+- Estatísticas desatualizadas
+- Forma da consulta não favorece o índice
+*/
+
+SELECT tablename, indexname, indexdef
+FROM pg_indexes
+WHERE schemaname = 'public'
+AND (indexdef ILIKE '%date%' OR indexdef ILIKE '%time%');
+
+EXPLAIN ANALYZE
+SELECT *
+FROM rental
+WHERE rental_date = '2005-05-24';
 
 
 
