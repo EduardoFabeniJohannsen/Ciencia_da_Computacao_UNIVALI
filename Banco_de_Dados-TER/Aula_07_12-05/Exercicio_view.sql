@@ -67,6 +67,20 @@ FROM Vlr_total_vendas_por_cliente;
 
 
 /*
-Execicio 1-
-Faça uma view que retorne uma tabela mostran o ID - NOME - Valor total das vendas por cidade
+Exercicio 2-
+Faça uma view que retorne uma tabela mostrando:
+CIDADE - Valor total das vendas por cidade
 */
+
+CREATE OR REPLACE VIEW Vlr_total_vendas_por_cidade AS
+SELECT
+    c.cidade,
+    SUM(p.valor) AS valor_total_vendas
+FROM clientes c
+JOIN pedidos p
+    ON c.id_cliente = p.id_cliente
+GROUP BY
+    c.cidade;
+
+SELECT *
+FROM Vlr_total_vendas_por_cidade;
