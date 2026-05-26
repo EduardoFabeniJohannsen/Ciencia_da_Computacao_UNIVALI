@@ -81,34 +81,110 @@ function resetarSimulacao() {
     document.getElementById("logs").innerHTML = "";
     document.getElementById("relatorio").innerHTML = "";
 }
-
+    
 function lerArquivo(texto) {
 
     const linhas = texto.trim().split("\n");
 
+    // =========================
+    // VALIDAR PRIMEIRA LINHA
+    // =========================
+
     const primeiraLinha = linhas[0].split(" ");
+
+    if (primeiraLinha.length < 3) {
+
+        alert("Erro: primeira linha inválida.");
+        simulacaoRodando = false;
+        return;
+    }
 
     quantum = parseInt(primeiraLinha[0]);
     ramSize = parseInt(primeiraLinha[1]);
     ioPenalty = parseInt(primeiraLinha[2]);
 
+    // =========================
+    // VALIDAÇÕES
+    // =========================
+
+    if (isNaN(quantum) || quantum <= 0) {
+
+        alert("Erro: Quantum deve ser maior que 0.");
+        simulacaoRodando = false;
+        return;
+    }
+
+    if (isNaN(ramSize) || ramSize <= 0) {
+
+        alert("Erro: RAM deve ser maior que 0.");
+        simulacaoRodando = false;
+        return;
+    }
+
+    if (isNaN(ioPenalty) || ioPenalty < 0) {
+
+        alert("Erro: IO Penalty inválido.");
+        simulacaoRodando = false;
+        return;
+    }
+
+    // =========================
+    // PROCESSOS
+    // =========================
+
     for (let i = 1; i < linhas.length; i++) {
 
         const partes = linhas[i].split(" ");
 
+        if (partes.length < 3) {
+
+            alert(`Erro na linha ${i + 1}`);
+            simulacaoRodando = false;
+            return;
+        }
+
         const chegada = parseInt(partes[0]);
+
+        if (isNaN(chegada) || chegada < 0) {
+
+            alert(`Erro: tempo de chegada inválido na linha ${i + 1}`);
+            simulacaoRodando = false;
+            return;
+        }
 
         const nome = partes[1];
 
-        const paginas = partes[2]
-            .split(",")
-            .map(Number);
+        if (!nome) {
+
+            alert(`Erro: nome inválido na linha ${i + 1}`);
+            simulacaoRodando = false;
+            return;
+        }
+
+        const paginasTexto = partes[2].split(",");
+
+        const paginas = [];
+
+        for (let pagina of paginasTexto) {
+
+            const numero = parseInt(pagina);
+
+            if (isNaN(numero)) {
+
+                alert(`Erro: página inválida na linha ${i + 1}`);
+                simulacaoRodando = false;
+                return;
+            }
+
+            paginas.push(numero);
+        }
 
         processos.push(
             new Processo(nome, chegada, paginas)
         );
     }
 }
+
 
 function loopSimulacao() {
 
