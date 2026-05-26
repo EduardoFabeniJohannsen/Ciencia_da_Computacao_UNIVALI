@@ -1,4 +1,3 @@
-javascript
 let quantum = 0;
 let ramSize = 0;
 let ioPenalty = 0;
