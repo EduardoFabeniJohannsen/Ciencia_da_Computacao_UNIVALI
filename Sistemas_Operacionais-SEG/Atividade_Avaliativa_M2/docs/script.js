@@ -81,7 +81,7 @@ function resetarSimulacao() {
     document.getElementById("logs").innerHTML = "";
     document.getElementById("relatorio").innerHTML = "";
 }
-    
+
 function lerArquivo(texto) {
 
     const linhas = texto.trim().split("\n");
@@ -183,6 +183,8 @@ function lerArquivo(texto) {
             new Processo(nome, chegada, paginas)
         );
     }
+
+    atualizarArquivoInfo();
 }
 
 
@@ -448,3 +450,32 @@ function gerarRelatorio() {
         `;
     });
 }
+
+function atualizarArquivoInfo() {
+
+    const div = document.getElementById("arquivo-info");
+
+    let html = "";
+
+    html += `
+        <p><strong>Quantum:</strong> ${quantum}</p>
+        <p><strong>RAM:</strong> ${ramSize}</p>
+        <p><strong>IO Penalty:</strong> ${ioPenalty}</p>
+        <hr>
+        <p><strong>Processos:</strong></p>
+    `;
+
+    processos.forEach(processo => {
+
+        html += `
+            <p>
+                ${processo.nome}
+                →
+                ${processo.paginas.join(",")}
+            </p>
+        `;
+    });
+
+    div.innerHTML = html;
+}
+
