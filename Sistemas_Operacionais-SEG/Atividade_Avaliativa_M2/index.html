@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador SO</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Simulador de Sistemas Operacionais</h1>
+
+        <div class="upload-area">
+            <input type="file" id="arquivoInput">
+            <button onclick="iniciarSimulacao()">
+                Iniciar Simulação
+            </button>
+        </div>
+
+        <div class="painel-grid">
+
+            <div class="card">
+                <h2>Tempo Atual</h2>
+                <div id="tempo">0</div>
+            </div>
+
+            <div class="card">
+                <h2>CPU Atual</h2>
+                <div id="cpu">Nenhum</div>
+            </div>
+
+            <div class="card">
+                <h2>RAM</h2>
+                <div id="ram"></div>
+            </div>
+
+            <div class="card">
+                <h2>Fila de Prontos</h2>
+                <div id="prontos"></div>
+            </div>
+
+            <div class="card">
+                <h2>Bloqueados</h2>
+                <div id="bloqueados"></div>
+            </div>
+
+        </div>
+
+        <div class="card logs-card">
+            <h2>Logs</h2>
+            <div id="logs"></div>
+        </div>
+
+        <div class="card logs-card">
+            <h2>Relatório Final</h2>
+            <div id="relatorio"></div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
