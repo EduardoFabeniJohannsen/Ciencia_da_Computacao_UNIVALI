@@ -28,6 +28,8 @@ class Processo {
 
         this.bloqueadoAte = -1;
 
+        this.paginaPendencia = null;
+
         this.finalizado = false;
 
         this.tempoFinalizacao = 0;
@@ -203,7 +205,7 @@ function loopSimulacao() {
 
         verificarFim();
 
-    }, 1000);
+    }, 1);
 }
 
 function tick() {
@@ -250,11 +252,13 @@ function verificarDesbloqueados() {
 
         if (bloqueados[i].bloqueadoAte <= tempo) {
 
-            adicionarLog(`${bloqueados[i].nome} voltou para fila de prontos`);
+            carregarPagina(bloqueados[i].paginaPendencia);
+
+            bloqueados[i].paginaPendencia = null;
 
             filaProntos.push(bloqueados[i]);
 
-            bloqueados.splice(i, 1);
+            bloqueados.splice(i,1);
         }
     }
 }
@@ -278,23 +282,36 @@ function executarProcesso(processo) {
 
     const paginaNaRam = ram.find(p => p.numero === pagina);
 
-    if (paginaNaRam) {
+if (paginaNaRam) {
 
-        paginaNaRam.ultimoUso = tempo;
+    paginaNaRam.ultimoUso = tempo;
 
-        adicionarLog(`${processo.nome} acessou página ${pagina} (HIT)`);
+    adicionarLog(`${processo.nome} acessou página ${pagina} (HIT)`);
 
-        processo.paginaAtual++;
+    processo.paginaAtual++;
 
-        processo.quantumRestante--;
+    processo.quantumRestante--;
+
+    // FINALIZA IMEDIATAMENTE APÓS A ÚLTIMA PÁGINA
+    if (processo.paginaAtual >= processo.paginas.length) {
+
+        processo.finalizado = true;
+        processo.tempoFinalizacao = tempo;
+
+        adicionarLog(`${processo.nome} finalizou`);
+
+        cpuAtual = null;
+
+        return;
     }
+}
     else {
 
         adicionarLog(`${processo.nome} sofreu PAGE FAULT na página ${pagina}`);
 
         processo.pageFaults++;
 
-        carregarPagina(pagina);
+        processo.paginaPendencia = pagina;
 
         processo.bloqueadoAte = tempo + ioPenalty;
 
@@ -316,6 +333,10 @@ function executarProcesso(processo) {
 }
 
 function carregarPagina(numeroPagina) {
+
+    if (ram.some(p => p.numero === numeroPagina)) {
+        return;
+    }
 
     if (ram.length >= ramSize) {
 
