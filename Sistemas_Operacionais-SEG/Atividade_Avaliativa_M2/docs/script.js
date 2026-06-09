@@ -205,7 +205,7 @@ function loopSimulacao() {
 
         verificarFim();
 
-    }, 1);
+    }, 100);
 }
 
 function tick() {
